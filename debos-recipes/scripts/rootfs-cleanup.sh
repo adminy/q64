@@ -20,4 +20,4 @@ rm -f /etc/ssh/ssh_host_* \
 touch /etc/machine-id
 echo "uninitialized" > /etc/machine-id
 printf "\nPermitRootLogin yes" >> /etc/ssh/sshd_config
-
+printf '' > /etc/motd
