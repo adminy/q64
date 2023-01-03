@@ -20,6 +20,4 @@ adduser "$USERNAME" input
 adduser "$USERNAME" dialout
 
 echo "$USERNAME:$PASSWORD" | chpasswd
-
-# Expire the password so the user is forced to set one
-passwd -e "$USERNAME"
+echo "root:$PASSWORD" | chpasswd

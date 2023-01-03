@@ -1,52 +1,62 @@
 name: Build Quartz64 Images
-on: push
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Name of the board model
+        options:
+        - Quartz64 Model A
+        - Quartz64 Model B
+        - SOQuartz Blade
+        - SOQuartz CM4 IO Board
+        - SOQuartz Model A
+        - EVB
+        required: true
+        default: 'SOQuartz CM4 IO Board'
+      uboot-config:
+        type: choice
+        description: U-Boot defconfig file
+        options:
+        - quartz64-a-rk3566_defconfig
+        - quartz64-b-rk3566_defconfig
+        - soquartz-blade-rk3566_defconfig
+        - soquartz-cm4io-rk3566_defconfig
+        - soquartz-model-a-rk3566_defconfig
+        - evb-rk3568_defconfig
+        required: true
+        default: 'soquartz-cm4io-rk3566_defconfig'
+      uboot-name:
+        type: choice
+        description: U-Boot Name
+        options:
+        - quartz64a
+        - quartz64b
+        - soquartz-blade
+        - soquartz-cm4io
+        - soquartz-model-a
+        - evb-rk3568
+        required: true
+        default: 'soquartz-cm4io'
+      yml:
+        type: choice
+        description: Debos Yaml Configuration file
+        options:
+        - quartz64a
+        - quartz64b
+        - soquartz-blade
+        - soquartz-cm4
+        - soquartz-model-a
+        required: true
+        default: 'soquartz-cm4'
 jobs:
   build_uboot:
-    strategy:
-      matrix:
-        boards: [
-          {
-            name: "Quartz64 Model A",
-            uboot-config: "quartz64-a-rk3566_defconfig",
-            uboot-name: "quartz64a"
-          },
-          {
-            name: "Quartz64 Model B",
-            uboot-config: "quartz64-b-rk3566_defconfig",
-            uboot-name: "quartz64b"
-          },
-          {
-            name: "SOQuartz Blade",
-            uboot-config: "soquartz-blade-rk3566_defconfig",
-            uboot-name: "soquartz-blade"
-          },
-          {
-            name: "SOQuartz CM4IO",
-            uboot-config: "soquartz-cm4-rk3566_defconfig",
-            uboot-name: "soquartz-cm4io"
-          },
-          {
-            name: "SOQuartz Model A",
-            uboot-config: "soquartz-model-a-rk3566_defconfig",
-            uboot-name: "soquartz-model-a"
-          },
-          {
-            name: "EVB",
-            uboot-config: "evb-rk3568_defconfig",
-            uboot-name: "evb-rk3568"
-          },
-        ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Install toolchain
         run: |
             sudo apt-get update
             sudo apt-get install build-essential crossbuild-essential-arm64 device-tree-compiler python3-pyelftools
-      #- name: Clone rkbin repository
-      #  uses: actions/checkout@v3
-      #  with:
-      #    repository: 'rockchip-linux/rkbin'
-      #    path: 'rkbin'
       - name: Clone workflow repository
         uses: actions/checkout@v3
         with:
@@ -54,6 +64,14 @@ jobs:
       - name: Clean u-boot
         run: |
           cd u-boot-quartz64
+          echo "# U-Boot load from NVME" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_CMD_NVME=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_NVME=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_PCI=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_PCI_PNP=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_PCIE_ROCKCHIP=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_PHY=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          echo "CONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
           make mrproper
       - name: Fetch rkbins
         run: |
@@ -64,12 +82,12 @@ jobs:
           cd u-boot-quartz64
           export ROCKCHIP_TPL=rk3566_ddr_1056MHz_v1.16.bin
           export BL31=rk3568_bl31_v1.42.elf
-          make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- ${{ matrix.boards.uboot-config }}
+          make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- ${{ github.event.inputs.uboot-config }}
           make ARCH=arm CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
       - name: Archive u-boot artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: u-boot-${{ matrix.boards.uboot-name }}
+          name: u-boot-${{ github.event.inputs.uboot-name }}
           path: |
             u-boot-quartz64/u-boot-rockchip.bin
             u-boot-quartz64/u-boot-rockchip-spi.bin
@@ -108,39 +126,9 @@ jobs:
   #           linux-libc-dev*.deb
   #           !linux-image-*dbg*.deb
   build_image:
-    strategy:
-      matrix:
-        boards: [
-          {
-            name: "Quartz64 Model A",
-            debos-yaml: "debian-quartz64a.yaml",
-            uboot-name: "quartz64a"
-          },
-          {
-            name: "Quartz64 Model B",
-            debos-yaml: "debian-quartz64b.yaml",
-            uboot-name: "quartz64b"
-          },
-          {
-            name: "SOQuartz CM4 IO Board",
-            debos-yaml: "debian-soquartz-cm4.yaml",
-            uboot-name: "soquartz-cm4io"
-          },
-          {
-            name: "SOQuartz Blade",
-            debos-yaml: "debian-soquartz-blade.yaml",
-            uboot-name: "soquartz-blade"
-          },
-          {
-            name: "SOQuartz Model A",
-            debos-yaml: "debian-soquartz-model-a.yaml",
-            uboot-name: "soquartz-model-a"
-          },
-        ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs:
       - build_uboot
-      # - build_kernel
     env:
       GOPATH: /opt/src/gocode
     steps:
@@ -149,27 +137,28 @@ jobs:
       - name: Download u-boot artifacts
         uses: actions/download-artifact@v3
         with:
-          name: u-boot-${{ matrix.boards.uboot-name}}
+          name: u-boot-${{ github.event.inputs.uboot-name}}
           path: debos-recipes/u-boot/
-      # - name: Download kernel artifacts
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: linux-kernel
-      #     path: debos-recipes/overlays/linux-kernel/
+      - name: Download kernel artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-kernel
+          path: debos-recipes/overlays/linux-kernel/
       - name: Install debos dependencies
         run: |
+          sudo add-apt-repository ppa:longsleep/golang-backports
           sudo apt-get update
-          sudo apt-get install golang git libglib2.0-dev libostree-dev \
+          sudo apt-get install golang-go git libglib2.0-dev libostree-dev \
                                qemu-system-x86 qemu-user-static debootstrap \
                                systemd-container
       - name: Install debos
         run: go install -v github.com/go-debos/debos/cmd/debos@latest
-      - name: Build ${{ matrix.boards.name }} Image
-        run: sudo /opt/src/gocode/bin/debos --disable-fakemachine debos-recipes/${{ matrix.boards.debos-yaml }}
+      - name: Build ${{ github.event.inputs.name }} Image
+        run: sudo /opt/src/gocode/bin/debos --disable-fakemachine debos-recipes/debian-${{ github.event.inputs.yml }}.yaml
       - name: Archive image artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.boards.name }} Image
+          name: ${{ github.event.inputs.name }} Image
           path: |
             *.img.xz
   do_release:
