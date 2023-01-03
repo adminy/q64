@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-import argparse
-import re
+import argparse, re
 from os import path
-from sys import stdout, stderr
+from sys import stdout
 
 
 KCONFIG_REGEX = re.compile(r"^(?P<kc_name>[\w]+)=(?P<kc_value>.+)$")

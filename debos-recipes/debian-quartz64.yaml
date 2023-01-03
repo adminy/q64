@@ -1,10 +1,10 @@
 {{- $board := or .board "tobereplaced" -}}
 {{- $suite := or .suite "bookworm" -}}
 {{- $mirror := or .mirror "https://deb.debian.org/debian" -}}
-{{- $hostname := or .hostname (printf "plebian-%s" $board) -}}
-{{- $image := or .image (printf "plebian-debian-%s-%s.img" $suite $board) -}}
-{{- $username := or .username "pleb" -}}
-{{- $password := or .password "pleb" -}}
+{{- $hostname := or .hostname (printf "box-%s" $board) -}}
+{{- $image := or .image (printf "box-deb-%s-%s.img" $suite $board) -}}
+{{- $username := or .username "pi" -}}
+{{- $password := or .password "123qwe" -}}
 
 architecture: "arm64"
 
@@ -111,11 +111,20 @@ actions:
     source: overlays/initramfs-tools-plebian/
     destination: /etc/initramfs-tools/
 
+  - action: overlay
+    description: Copy kernel debs to /root
+    source: overlays/linux-kernel/
+    destination: /root/
+
   - action: run
-    description: Install kernel from Experimental
+    description: Install linux kernel packages
     chroot: true
-    command: |
-      apt-get install -y linux-image-arm64 -t experimental
+    command: dpkg -i /root/*.deb
+
+  - action: run
+    description: Clean up debs in /root
+    chroot: true
+    command: rm /root/*.deb
 
   - action: run
     description: Set up u-boot default file

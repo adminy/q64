@@ -14,7 +14,7 @@ first boot.
 
 ## Default Login
 
-Username `pleb` with password `pleb`, you will be immediately prompted to change
+Username `pi` with password `123qwe`, you will be immediately prompted to change
 your password the moment you log in.
 
 
