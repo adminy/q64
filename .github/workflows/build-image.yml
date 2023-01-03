@@ -160,11 +160,12 @@ jobs:
         with:
           name: u-boot-${{ github.event.inputs.uboot-name}}
           path: debos-recipes/u-boot/
-      - name: Download kernel artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-kernel
-          path: debos-recipes/overlays/linux-kernel/
+      # ~ TODO: depreacate
+      # - name: Download kernel artifacts
+      #   uses: actions/download-artifact@v3
+      #   with:
+      #     name: linux-kernel
+      #     path: debos-recipes/overlays/linux-kernel/
       - name: Install debos dependencies
         run: |
           sudo add-apt-repository ppa:longsleep/golang-backports
