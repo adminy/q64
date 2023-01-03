@@ -64,14 +64,7 @@ jobs:
       - name: Clean u-boot
         run: |
           cd u-boot-quartz64
-          echo "# U-Boot load from NVME" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_CMD_NVME=y" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_NVME=y" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_PCI=y" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_PCI_PNP=y" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_PCIE_ROCKCHIP=y" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_PHY=y" >> ./configs/${{ github.event.inputs.uboot-config }}
-          echo "CONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          printf "\n# U-Boot load from NVME\nCONFIG_CMD_NVME=y\nCONFIG_NVME=y\nCONFIG_NVME_PCI=y\nCONFIG_PCI=y\nCONFIG_PCI_PNP=y\nCONFIG_PCI_ENHANCED_ALLOCATION=y\nCONFIG_PCIE_DW_COMMON=y\nCONFIG_PCIE_DW_ROCKCHIP=y\nCONFIG_PHY=y\nCONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y\nCONFIG_PCIE_ROCKCHIP=y\nCONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
           make mrproper
       - name: Fetch rkbins
         run: |

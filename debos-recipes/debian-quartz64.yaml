@@ -127,11 +127,6 @@ actions:
     source: overlays/initramfs-tools-plebian/
     destination: /etc/initramfs-tools/
 
-  - action: overlay
-    description: Copy kernel debs to /root
-    source: overlays/linux-kernel/
-    destination: /root/
-
   - action: run
     description: Rebuild initramfs
     chroot: true
