@@ -64,7 +64,7 @@ jobs:
       - name: Clean u-boot
         run: |
           cd u-boot-quartz64
-          printf "\n# U-Boot load from NVME\nCONFIG_CMD_NVME=y\nCONFIG_NVME=y\nCONFIG_NVME_PCI=y\nCONFIG_PCI=y\nCONFIG_PCI_PNP=y\nCONFIG_PCI_ENHANCED_ALLOCATION=y\nCONFIG_PCIE_DW_COMMON=y\nCONFIG_PCIE_DW_ROCKCHIP=y\nCONFIG_PHY=y\nCONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y\nCONFIG_PCIE_ROCKCHIP=y\nCONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          # printf "\n# U-Boot load from NVME\nCONFIG_CMD_NVME=y\nCONFIG_NVME=y\nCONFIG_NVME_PCI=y\nCONFIG_PCI=y\nCONFIG_PCI_PNP=y\nCONFIG_PCI_ENHANCED_ALLOCATION=y\nCONFIG_PCIE_DW_COMMON=y\nCONFIG_PCIE_DW_ROCKCHIP=y\nCONFIG_PHY=y\nCONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y\nCONFIG_PCIE_ROCKCHIP=y\nCONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
           make mrproper
       - name: Fetch rkbins
         run: |
@@ -132,12 +132,6 @@ jobs:
         with:
           name: u-boot-${{ github.event.inputs.uboot-name}}
           path: debos-recipes/u-boot/
-      # ~ TODO: depreacate
-      # - name: Download kernel artifacts
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: linux-kernel
-      #     path: debos-recipes/overlays/linux-kernel/
       - name: Install debos dependencies
         run: |
           sudo add-apt-repository ppa:longsleep/golang-backports
