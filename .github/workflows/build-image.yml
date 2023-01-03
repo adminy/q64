@@ -53,12 +53,6 @@ jobs:
         run: |
             sudo apt-get update
             sudo apt-get install build-essential crossbuild-essential-arm64 device-tree-compiler
-      # ~ TODO: depreacate
-      # - name: Clone rkbin repository
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: 'rockchip-linux/rkbin'
-      #     path: 'rkbin'
       - name: Clone u-boot repository
         uses: actions/checkout@v3
         with:
@@ -68,7 +62,7 @@ jobs:
       - name: Clean u-boot
         run: |
           cd u-boot-quartz64
-          printf "\n# U-Boot load from NVME\nCONFIG_CMD_NVME=y\nCONFIG_NVME=y\nCONFIG_NVME_PCI=y\nCONFIG_PCI=y\nCONFIG_PCI_PNP=y\nCONFIG_PCI_ENHANCED_ALLOCATION=y\nCONFIG_PCIE_DW_COMMON=y\nCONFIG_PCIE_DW_ROCKCHIP=y\nCONFIG_PHY=y\nCONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y\nCONFIG_PCIE_ROCKCHIP=y\nCONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
+          # printf "\n# U-Boot load from NVME\nCONFIG_CMD_NVME=y\nCONFIG_NVME=y\nCONFIG_NVME_PCI=y\nCONFIG_PCI=y\nCONFIG_PCI_PNP=y\nCONFIG_PCI_ENHANCED_ALLOCATION=y\nCONFIG_PCIE_DW_COMMON=y\nCONFIG_PCIE_DW_ROCKCHIP=y\nCONFIG_PHY=y\nCONFIG_PHY_ROCKCHIP_SNPS_PCIE3=y\nCONFIG_PCIE_ROCKCHIP=y\nCONFIG_PHY_ROCKCHIP_PCIE=y" >> ./configs/${{ github.event.inputs.uboot-config }}
           make mrproper
       - name: Fetch old rkbins
         run: |
@@ -86,43 +80,6 @@ jobs:
           path: |
             u-boot-quartz64/u-boot.itb
             u-boot-quartz64/idbloader.img
-  # ~ TODO: depreacate
-  # build_kernel:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Clone workflow repository
-  #       uses: actions/checkout@v3
-  #     - name: Install toolchain
-  #       run: |
-  #           sudo apt-get -yq update && sudo apt-get -yq upgrade
-  #           sudo apt-get -yq install build-essential crossbuild-essential-arm64 device-tree-compiler \
-  #           autoconf bc bison flex ccache cpio dkms fakeroot kmod quilt rsync dh-exec \
-  #           libssl-dev libncurses-dev libelf-dev libudev-dev libpci-dev libiberty-dev
-  #     - name: Clone kernel repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: 'CounterPillow/linux'
-  #         ref: 'quartz64-deploy'
-  #         path: 'linux'
-  #     - name: Make config
-  #       run: |
-  #         cp config linux/.config
-  #         cd linux
-  #         ./scripts/config --disable DEBUG_INFO
-  #         make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- olddefconfig
-  #     - name: Build kernel
-  #       run: |
-  #         cd linux
-  #         export KDEB_COMPRESS=xz
-  #         make -j6 ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- deb-pkg
-  #     - name: Archive kernel artifacts
-  #       uses: actions/upload-artifact@v3
-  #       with:
-  #         name: linux-kernel
-  #         path: |
-  #           linux-image-*.deb
-  #           linux-libc-dev*.deb
-  #           !linux-image-*dbg*.deb
   build_dt_debs:
     runs-on: ubuntu-latest
     steps:
@@ -148,8 +105,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build_uboot
-      # ~ TODO: depreacate
-      # - build_kernel
     env:
       GOPATH: /opt/src/gocode
     steps:
@@ -160,12 +115,6 @@ jobs:
         with:
           name: u-boot-${{ github.event.inputs.uboot-name}}
           path: debos-recipes/u-boot/
-      # ~ TODO: depreacate
-      # - name: Download kernel artifacts
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: linux-kernel
-      #     path: debos-recipes/overlays/linux-kernel/
       - name: Install debos dependencies
         run: |
           sudo add-apt-repository ppa:longsleep/golang-backports
@@ -189,8 +138,6 @@ jobs:
     needs:
       - build_image
       - build_dt_debs
-      # ~ TODO: depreacate
-      # - build_kernel
     steps:
       - name: Clone workflow repository
         uses: actions/checkout@v3

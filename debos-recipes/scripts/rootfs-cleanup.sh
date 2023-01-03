@@ -19,6 +19,5 @@ rm -f /etc/ssh/ssh_host_* \
 # empty file is not the way to go, causes firstboot condition to break
 touch /etc/machine-id
 echo "uninitialized" > /etc/machine-id
+printf "\nPermitRootLogin yes" >> /etc/ssh/sshd_config
 
-echo "" >> /etc/ssh/sshd_config
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config

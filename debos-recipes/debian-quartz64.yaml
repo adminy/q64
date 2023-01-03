@@ -117,27 +117,9 @@ actions:
     chroot: true
     command: |
       apt-get install -y linux-image-arm64 -t experimental
-      apt-get update
-      apt-get upgrade -y
-      apt-get dist-upgrade -y
-
-  # TODO: depreacate
-  # - action: overlay
-  #   description: Copy kernel debs to /root
-  #   source: overlays/linux-kernel/
-  #   destination: /root/
-
-  # ~ TODO: depreacate
-  # - action: run
-  #   description: Install linux kernel packages
-  #   chroot: true
-  #   command: dpkg -i /root/*.deb
-
-  # ~ TODO: depreacate
-  # - action: run
-  #   description: Clean up debs in /root
-  #   chroot: true
-  #   command: rm /root/*.deb
+      # apt-get update
+      # apt-get upgrade -y
+      # apt-get dist-upgrade -y
 
   - action: run
     description: Set up u-boot default file
