@@ -85,6 +85,15 @@ actions:
       - wget
       - xz-utils
       - zstd
+      - libnss-systemd
+      - liblockfile-bin
+      - e2fsprogs
+      - parted
+      - ncurses-term
+      - bluetooth
+      - gawk
+      - network-manager
+      - nvme-cli
 
   - action: run
     description: Install standard packages
