@@ -94,6 +94,13 @@ actions:
       - gawk
       - network-manager
       - nvme-cli
+      - f2fs-tools
+      - htop
+      - tmux
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
 
   - action: run
     description: Install standard packages
