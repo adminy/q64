@@ -95,6 +95,7 @@ actions:
       - network-manager
       - nvme-cli
       - f2fs-tools
+      - libsensors-dev
       - htop
       - tmux
       - ca-certificates
