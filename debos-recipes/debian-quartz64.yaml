@@ -98,7 +98,6 @@ actions:
       - libsensors-dev
       - htop
       - tmux
-      - ca-certificates
       - curl
       - gnupg
       - lsb-release
