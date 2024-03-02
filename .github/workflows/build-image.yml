@@ -21,7 +21,7 @@ on:
         - quartz64-a-rk3566_defconfig
         - quartz64-b-rk3566_defconfig
         - soquartz-blade-rk3566_defconfig
-        - soquartz-cm4io-rk3566_defconfig
+        - soquartz-cm4-rk3566_defconfig
         - soquartz-model-a-rk3566_defconfig
         - evb-rk3568_defconfig
         required: true
